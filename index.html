@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Krayv Shop</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  * { box-sizing: border-box; transition: background-color 0.3s ease, color 0.3s ease; }
+  :root {
+    --bg: #ffffff; --text: #000000; --card-bg: #f5f5f7;
+    --card-border: rgba(0,0,0,0.08); --muted: #888;
+    --accent: #2481cc; --accent-text: #ffffff;
+    --overlay: rgba(0,0,0,0.5); --qty-bg: #e5e5e5;
+    --remove-bg: #ffdddd; --remove-text: #c00; --divider: #eee;
+  }
+  body.dark {
+    --bg: #0f0f14; --text: #ffffff; --card-bg: #1c1c22;
+    --card-border: rgba(255,255,255,0.08); --muted: #999;
+    --accent: #2481cc; --accent-text: #ffffff;
+    --overlay: rgba(0,0,0,0.7); --qty-bg: #2c2c33;
+    --remove-bg: #4a1f1f; --remove-text: #ff8888; --divider: #2a2a33;
+  }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text);
+    padding: 16px; padding-top: 60px; padding-bottom: 100px; min-height: 100vh;
+  }
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px;
+    width: 48px; height: 28px; border-radius: 14px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    cursor: pointer; z-index: 200;
+    display: flex; align-items: center; padding: 3px;
+  }
+  .theme-toggle .knob {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center;
+    justify-content: center; font-size: 12px;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.dark .theme-toggle .knob { transform: translateX(20px); }
+  .shop-title {
+    font-size: 26px; font-weight: 800; color: #2481cc;
+    margin: 0 0 20px 0; letter-spacing: 0.5px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .card { border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; background: var(--card-bg); }
+  .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+  .card h3 { font-size: 15px; margin: 0 0 4px 0; }
+  .card .desc { font-size: 12px; color: var(--muted); margin: 0 0 6px 0; }
+  .card .price { font-size: 15px; font-weight: 600; margin: 0 0 8px 0; }
+  .card button {
+    width: 100%; padding: 8px 12px; border-radius: 8px; border: none;
+    background: var(--accent); color: var(--accent-text);
+    font-size: 14px; cursor: pointer;
+  }
+  .floating {
+    position: fixed; bottom: 20px; right: 20px;
+    padding: 12px 20px; border-radius: 30px; border: none;
+    background: var(--accent); color: var(--accent-text);
+    font-size: 15px; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25); cursor: pointer; z-index: 50;
+  }
+  .overlay {
+    position: fixed; inset: 0; background: var(--overlay);
+    display: none; align-items: flex-end; z-index: 100;
+  }
+  .overlay.open { display: flex; }
+  .cart {
+    width: 100%; max-height: 85vh; overflow-y: auto;
+    background: var(--bg); border-top-left-radius: 20px;
+    border-top-right-radius: 20px; padding: 20px;
+  }
+  .cart h2 { margin: 0 0 12px 0; font-size: 20px; }
+  .cart .empty { color: var(--muted); text-align: center; padding: 20px 0; }
+  .item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px; border-radius: 10px;
+    background: var(--card-bg); margin-bottom: 8px;
+  }
+  .item .info { flex: 1; }
+  .item .name { font-size: 14px; font-weight: 600; }
+  .item .sub { font-size: 12px; color: var(--muted); }
+  .qty { display: flex; align-items: center; gap: 6px; }
+  .qty button {
+    width: 28px; height: 28px; border-radius: 6px; border: none;
+    background: var(--qty-bg); color: var(--text);
+    font-size: 16px; cursor: pointer;
+  }
+  .qty .val { min-width: 20px; text-align: center; font-size: 14px; }
+  .remove {
+    width: 28px; height: 28px; border-radius: 6px; border: none;
+    background: var(--remove-bg); color: var(--remove-text); cursor: pointer;
+  }
+  .total {
+    display: flex; justify-content: space-between; margin-top: 16px;
+    padding-top: 12px; border-top: 1px solid var(--divider); font-size: 16px;
+  }
+  .order {
+    width: 100%; margin-top: 12px; padding: 14px 0;
+    border-radius: 12px; border: none;
+    background: var(--accent); color: var(--accent-text);
+    font-size: 16px; font-weight: 600; cursor: pointer;
+  }
+  .close {
+    width: 100%; margin-top: 8px; padding: 10px 0;
+    border-radius: 12px; border: none; background: transparent;
+    color: var(--muted); font-size: 14px; cursor: pointer;
+  }
+</style>
+</head>
+<body class="dark">
+
+<div class="theme-toggle" onclick="toggleTheme()">
+  <div class="knob" id="themeKnob">🌙</div>
+</div>
+
+<h1 class="shop-title">Krayv Shop</h1>
+
+<div class="grid" id="grid"></div>
+
+<button class="floating" onclick="openCart()">
+  🛒 Корзина <span id="cartCount"></span>
+</button>
+
+<div class="overlay" id="overlay" onclick="closeCart(event)">
+  <div class="cart" onclick="event.stopPropagation()">
+    <h2>Корзина</h2>
+    <div id="cartContent"></div>
+  </div>
+</div>
+
+<script>
+  const products = [
+    {
+      id: 1,
+      name: "софт sessionspam",
+      price: 50,
+      description: "спам софт тг входы",
+      image: "https://i.ytimg.com/vi/AqVnXYyP9Aw/maxresdefault.jpg"
+    }
+  ];
+
+  let cart = [];
+  const tg = window.Telegram?.WebApp;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  function toggleTheme() {
+    document.body.classList.toggle("dark");
+    document.getElementById("themeKnob").textContent =
+      document.body.classList.contains("dark") ? "🌙" : "☀️";
+  }
+
+  function renderGrid() {
+    document.getElementById("grid").innerHTML = products.map(p => `
+      <div class="card">
+        <img src="${p.image}" alt="${p.name}">
+        <h3>${p.name}</h3>
+        <p class="desc">${p.description}</p>
+        <p class="price">${p.price} ⭐</p>
+        <button onclick="addToCart(${p.id})">В корзину</button>
+      </div>
+    `).join("");
+  }
+
+  function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    const existing = cart.find(i => i.product.id === id);
+    if (existing) existing.qty += 1;
+    else cart.push({ product, qty: 1 });
+    renderCart();
+  }
+
+  function decreaseQty(id) {
+    const item = cart.find(i => i.product.id === id);
+    if (!item) return;
+    item.qty -= 1;
+    if (item.qty <= 0) cart = cart.filter(i => i.product.id !== id);
+    renderCart();
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(i => i.product.id !== id);
+    renderCart();
+  }
+
+  function totalSum() { return cart.reduce((s, i) => s + i.product.price * i.qty, 0); }
+  function totalCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+
+  function renderCart() {
+    document.getElementById("cartCount").textContent =
+      totalCount() > 0 ? "(" + totalCount() + ")" : "";
+    const c = document.getElementById("cartContent");
+    if (cart.length === 0) {
+      c.innerHTML = '<p class="empty">Пока пусто</p><button class="close" onclick="closeCart()">Закрыть</button>';
+      return;
+    }
+    c.innerHTML = cart.map(i => `
+      <div class="item">
+        <div class="info">
+          <div class="name">${i.product.name}</div>
+          <div class="sub">${i.product.price} ⭐ × ${i.qty} = ${i.product.price * i.qty} ⭐</div>
+        </div>
+        <div class="qty">
+          <button onclick="decreaseQty(${i.product.id})">−</button>
+          <span class="val">${i.qty}</span>
+          <button onclick="addToCart(${i.product.id})">+</button>
+          <button class="remove" onclick="removeFromCart(${i.product.id})">✕</button>
+        </div>
+      </div>
+    `).join("") + `
+      <div class="total"><span>Итого:</span><strong>${totalSum()} ⭐</strong></div>
+      <button class="order" onclick="sendOrder()">Оформить заказ</button>
+      <button class="close" onclick="closeCart()">Закрыть</button>
+    `;
+  }
+
+  function openCart() {
+    renderCart();
+    document.getElementById("overlay").classList.add("open");
+  }
+
+  function closeCart(e) {
+    if (e && e.target.id !== "overlay" && e.target.className !== "close") return;
+    document.getElementById("overlay").classList.remove("open");
+  }
+
+  function sendOrder() {
+    if (!tg) { alert("Открой через Telegram-бота"); return; }
+    if (cart.length === 0) { tg.showAlert("Корзина пуста"); return; }
+    const order = {
+      type: "order",
+      items: cart.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty })),
+      total: totalSum(),
+      createdAt: new Date().toISOString()
+    };
+    tg.sendData(JSON.stringify(order));
+    cart = [];
+    renderCart();
+    closeCart();
+  }
+
+  renderGrid();
+  renderCart();
+</script>
+
+</body>
+</html>
