@@ -45,16 +45,33 @@
     font-size: 26px; font-weight: 800; color: #2481cc;
     margin: 0 0 20px 0; letter-spacing: 0.5px;
   }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-  .card { border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; background: var(--card-bg); }
-  .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    border: 1px solid var(--card-border); border-radius: 12px;
+    padding: 10px; background: var(--card-bg);
+    display: flex; flex-direction: column;
+  }
+  .card-img-wrap {
+    width: 100%; aspect-ratio: 1 / 1; overflow: hidden;
+    border-radius: 8px; margin-bottom: 8px; background: #000;
+  }
+  .card img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
   .card h3 { font-size: 15px; margin: 0 0 4px 0; }
-  .card .desc { font-size: 12px; color: var(--muted); margin: 0 0 6px 0; }
+  .card .desc { font-size: 12px; color: var(--muted); margin: 0 0 6px 0; flex: 1; }
   .card .price { font-size: 15px; font-weight: 600; margin: 0 0 8px 0; }
   .card button {
     width: 100%; padding: 8px 12px; border-radius: 8px; border: none;
     background: var(--accent); color: var(--accent-text);
     font-size: 14px; cursor: pointer;
+  }
+  .card button:disabled {
+    background: var(--qty-bg); color: var(--muted); cursor: not-allowed;
   }
   .floating {
     position: fixed; bottom: 20px; right: 20px;
@@ -76,27 +93,31 @@
   .cart h2 { margin: 0 0 12px 0; font-size: 20px; }
   .cart .empty { color: var(--muted); text-align: center; padding: 20px 0; }
   .item {
-    display: flex; align-items: center; gap: 8px;
     padding: 10px; border-radius: 10px;
     background: var(--card-bg); margin-bottom: 8px;
   }
-  .item .info { flex: 1; }
+  .item .row1 {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 8px;
+  }
   .item .name { font-size: 14px; font-weight: 600; }
-  .item .sub { font-size: 12px; color: var(--muted); }
-  .qty { display: flex; align-items: center; gap: 6px; }
-  .qty button {
-    width: 28px; height: 28px; border-radius: 6px; border: none;
-    background: var(--qty-bg); color: var(--text);
-    font-size: 16px; cursor: pointer;
+  .item .line { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .item .remove {
+    width: 26px; height: 26px; border-radius: 6px; border: none;
+    background: var(--remove-bg); color: var(--remove-text);
+    cursor: pointer; flex-shrink: 0;
   }
-  .qty .val { min-width: 20px; text-align: center; font-size: 14px; }
-  .remove {
-    width: 28px; height: 28px; border-radius: 6px; border: none;
-    background: var(--remove-bg); color: var(--remove-text); cursor: pointer;
+  .totals {
+    margin-top: 16px; padding-top: 12px;
+    border-top: 1px solid var(--divider); font-size: 14px;
   }
-  .total {
-    display: flex; justify-content: space-between; margin-top: 16px;
-    padding-top: 12px; border-top: 1px solid var(--divider); font-size: 16px;
+  .totals .row {
+    display: flex; justify-content: space-between; margin-bottom: 6px;
+  }
+  .totals .row.commission { color: var(--muted); font-size: 13px; }
+  .totals .row.final {
+    font-size: 17px; font-weight: 700; margin-top: 10px;
+    padding-top: 10px; border-top: 1px solid var(--divider);
   }
   .order {
     width: 100%; margin-top: 12px; padding: 14px 0;
@@ -139,7 +160,48 @@
       name: "софт sessionspam",
       price: 50,
       description: "спам софт тг входы",
-      image: "https://i.ytimg.com/vi/AqVnXYyP9Aw/maxresdefault.jpg"
+      image: "https://i.ibb.co/pvzsB1FL/CYalvo-Egq-Vn1-VCg8x-B0-NU917s-hc4-ABoy-VPdb-B07x-G7-Emih-Or-C3w-INl-CXj-Yx-Wiyf-Exy-Bui-Katy-Vi-Vyf4-JFx.jpg",
+      noCommission: true
+    },
+    {
+      id: 2,
+      name: "Деф",
+      price: 150,
+      description: "защита от krayverov",
+      image: "https://i.ibb.co/1tSVqcPq/Rz9qwz6-TROMzj-GQ0-Qe-AGTCjdo3y4-KJe-Im-Hkz-Db-Wqt-E8hig-q-Chhb77-Okx-NDdfv-ZXugl-Bmn-SPW0-NNyi-KYYGRVOv.jpg",
+      noCommission: true
+    },
+    {
+      id: 3,
+      name: "обучение",
+      price: 150,
+      description: "обучение от Krayverov",
+      image: "https://i.ibb.co/1tSVqcPq/Rz9qwz6-TROMzj-GQ0-Qe-AGTCjdo3y4-KJe-Im-Hkz-Db-Wqt-E8hig-q-Chhb77-Okx-NDdfv-ZXugl-Bmn-SPW0-NNyi-KYYGRVOv.jpg",
+      noCommission: true
+    },
+    {
+      id: 4,
+      name: "мишка от Krayverov",
+      price: 25,
+      description: "мишка с росписью",
+      image: "https://i.ibb.co/Pz0H462D/OTEnx61k-1932-l-Pq-Bzb-XT0acqxlc-K9f-FXCMf-Dks-Wu-M3s-II63-I3-Zlh-CLb-VRF9-Ge-XNsj3lc-N0-IMqn-UR-Jj6-P-k.jpg",
+      noCommission: true
+    },
+    {
+      id: 5,
+      name: "рандом NFT",
+      price: 600,
+      description: "рандомное нфт выше или ниже своей цены",
+      image: "https://i.ibb.co/Gvz3JYLB/50y-CDLtp-SN-f2-Lwl0-Sa2roya8n-RUYcie6-p7-BKlp-Qdo4g-JQMMOp-QKQ1jn-WHt2s-Seu-Um0sy-Rm-ZNV0chtj8x-J-gg.jpg",
+      noCommission: false
+    },
+    {
+      id: 6,
+      name: "рандом BLACK NFT",
+      price: 3500,
+      description: "рандом нфт выше или ниже своей цены на блэк фоне",
+      image: "https://i.ibb.co/7tNrN4Kt/Lg-Kj-XAj-Ea-Bpprqqyrxq1x8k-PE-q1-U9ghy0b7utxnald3a-KSPv-Iof5-L4-BKeirm5-Z27-Bv6-L-lw1ze61ri-QAKBzp-RD.jpg",
+      noCommission: false
     }
   ];
 
@@ -153,41 +215,60 @@
       document.body.classList.contains("dark") ? "🌙" : "☀️";
   }
 
+  function isInCart(id) {
+    return cart.some(i => i.product.id === id);
+  }
+
   function renderGrid() {
-    document.getElementById("grid").innerHTML = products.map(p => `
+    document.getElementById("grid").innerHTML = products.map(p => {
+      const inCart = isInCart(p.id);
+      return `
       <div class="card">
-        <img src="${p.image}" alt="${p.name}">
+        <div class="card-img-wrap">
+          <img src="${p.image}" alt="${p.name}">
+        </div>
         <h3>${p.name}</h3>
         <p class="desc">${p.description}</p>
         <p class="price">${p.price} ⭐</p>
-        <button onclick="addToCart(${p.id})">В корзину</button>
+        <button onclick="addToCart(${p.id})" ${inCart ? "disabled" : ""}>
+          ${inCart ? "Уже в корзине" : "В корзину"}
+        </button>
       </div>
-    `).join("");
+    `}).join("");
   }
 
   function addToCart(id) {
+    if (isInCart(id)) return;
     const product = products.find(p => p.id === id);
-    const existing = cart.find(i => i.product.id === id);
-    if (existing) existing.qty += 1;
-    else cart.push({ product, qty: 1 });
-    renderCart();
-  }
-
-  function decreaseQty(id) {
-    const item = cart.find(i => i.product.id === id);
-    if (!item) return;
-    item.qty -= 1;
-    if (item.qty <= 0) cart = cart.filter(i => i.product.id !== id);
+    cart.push({ product, qty: 1 });
+    renderGrid();
     renderCart();
   }
 
   function removeFromCart(id) {
     cart = cart.filter(i => i.product.id !== id);
+    renderGrid();
     renderCart();
   }
 
-  function totalSum() { return cart.reduce((s, i) => s + i.product.price * i.qty, 0); }
-  function totalCount() { return cart.reduce((s, i) => s + i.qty, 0); }
+  function baseSum() {
+    return cart.reduce((s, i) => s + i.product.price * i.qty, 0);
+  }
+
+  function commissionSum() {
+    return cart.reduce((s, i) => {
+      if (i.product.noCommission) return s;
+      return s + i.product.price * i.qty * 0.2;
+    }, 0);
+  }
+
+  function totalSum() {
+    return baseSum() + commissionSum();
+  }
+
+  function totalCount() {
+    return cart.reduce((s, i) => s + i.qty, 0);
+  }
 
   function renderCart() {
     document.getElementById("cartCount").textContent =
@@ -197,24 +278,40 @@
       c.innerHTML = '<p class="empty">Пока пусто</p><button class="close" onclick="closeCart()">Закрыть</button>';
       return;
     }
-    c.innerHTML = cart.map(i => `
+
+    let itemsHtml = cart.map(i => {
+      const lineSum = i.product.price * i.qty;
+      const comm = i.product.noCommission ? 0 : lineSum * 0.2;
+      const commText = i.product.noCommission
+        ? "Без комиссии"
+        : "+ " + comm.toFixed(0) + " ⭐ комиссия";
+      return `
       <div class="item">
-        <div class="info">
-          <div class="name">${i.product.name}</div>
-          <div class="sub">${i.product.price} ⭐ × ${i.qty} = ${i.product.price * i.qty} ⭐</div>
-        </div>
-        <div class="qty">
-          <button onclick="decreaseQty(${i.product.id})">−</button>
-          <span class="val">${i.qty}</span>
-          <button onclick="addToCart(${i.product.id})">+</button>
+        <div class="row1">
+          <div>
+            <div class="name">${i.product.name}</div>
+            <div class="line">${i.product.price} ⭐ × ${i.qty} = ${lineSum} ⭐</div>
+            <div class="line">${commText}</div>
+          </div>
           <button class="remove" onclick="removeFromCart(${i.product.id})">✕</button>
         </div>
+      </div>`;
+    }).join("");
+
+    const base = baseSum();
+    const comm = commissionSum();
+    const total = base + comm;
+
+    itemsHtml += `
+      <div class="totals">
+        <div class="row"><span>Товары:</span><span>${base} ⭐</span></div>
+        ${comm > 0 ? `<div class="row commission"><span>Комиссия Telegram (+20%):</span><span>+${comm.toFixed(0)} ⭐</span></div>` : ""}
+        <div class="row final"><span>Итого:</span><span>${total.toFixed(0)} ⭐</span></div>
       </div>
-    `).join("") + `
-      <div class="total"><span>Итого:</span><strong>${totalSum()} ⭐</strong></div>
       <button class="order" onclick="sendOrder()">Оформить заказ</button>
       <button class="close" onclick="closeCart()">Закрыть</button>
     `;
+    c.innerHTML = itemsHtml;
   }
 
   function openCart() {
@@ -232,12 +329,21 @@
     if (cart.length === 0) { tg.showAlert("Корзина пуста"); return; }
     const order = {
       type: "order",
-      items: cart.map(i => ({ id: i.product.id, name: i.product.name, price: i.product.price, qty: i.qty })),
+      items: cart.map(i => ({
+        id: i.product.id,
+        name: i.product.name,
+        price: i.product.price,
+        qty: i.qty,
+        noCommission: !!i.product.noCommission
+      })),
+      base: baseSum(),
+      commission: commissionSum(),
       total: totalSum(),
       createdAt: new Date().toISOString()
     };
     tg.sendData(JSON.stringify(order));
     cart = [];
+    renderGrid();
     renderCart();
     closeCart();
   }
